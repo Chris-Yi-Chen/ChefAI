@@ -7,6 +7,7 @@ export default function Main() {
 
     const [ingredients, setIngredients] = React.useState([])
     const [recipe, setRecipe] = React.useState("")
+    const recipeSection = React.useRef(null)
 
     async function getRecipe() {
         const recipeMarkdown = await getRecipeFromMistral(ingredients)
@@ -21,6 +22,12 @@ export default function Main() {
         setIngredients(prevIngredients => [...prevIngredients, newIngredient])
     }
 
+    React.useEffect(() => {
+        if (recipe !== "" && recipeSection.current) {
+            recipeSection.current.scrollIntoView({ behavior: "smooth" })
+        }
+    }
+    , [recipe])
     
     return (
         <main>
@@ -33,7 +40,13 @@ export default function Main() {
                 />
                 <button>Add Ingredient</button>
             </form>
-            {ingredients.length > 0 && <IngredientsList ingredients={ingredients} getRecipe={getRecipe}/>}
+            {ingredients.length > 0 && 
+                <IngredientsList 
+                    ingredients={ingredients} 
+                    getRecipe={getRecipe}
+                    ref={recipeSection}
+                />
+            }
             {recipe != "" && <ClaudeRecipe recipe={recipe}/>}
         </main>
     )
